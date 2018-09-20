@@ -1,0 +1,117 @@
+# Copyright 2017 Red Hat, Inc. and/or its affiliates
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+#- debug:
+##    msg=" {{ groups['broker']|map( {{ amq_configurator_broker_file }} )|join(' ') }} "
+##    msg=" {{ groups['broker'] | zip('/lala ' ) }} "
+#    msg="{% for item in groups['broker'] %}{{item}}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
+#
+#- debug: msg="AMQCFG Profile= {{ amq_configurator_profile }}"
+#- debug: msg="hostvars={{ amq_broker_external_address | default(ansible_default_ipv4.address) }}"
+#- debug: msg=" {{ amq_configurator_broker_file }}"
+#- debug: msg=" {{ amq_broker_local_facts_dir }} "
+#- debug: msg=" {{ amq_broker_default_facts_file }} "
+#- debug: msg=" {{ amq_broker_node_info_file }} "
+#- debug: msg=" {{ groups }} "
+#
+#- debug: msg=" {{ amq_configurator_yq_cmd }} -y -s 'map({ (.broker_xml.name):. }) | add ' "{{ profiles_list }}"  >> "{{ amq_configurator_master_file }}" "
+
+
+- name: Install configurator tool requirements
+  run_once: True
+  pip:
+    name: "{{ item }}"
+    state: latest
+    virtualenv: "{{ amq_configurator_venv }}"
+    virtualenv_python: python
+  with_items:
+    - amqcfg
+    - yq
+  delegate_to: 127.0.0.1
+
+- name: Construct amqcfg profile command
+  stat:
+    path: "{{ amq_configurator_broker_db_file }}"
+  register:
+    db_tune_file
+  delegate_to: 127.0.0.1
+
+- name: Construct amqcfg profile command with DB tune file
+  when: db_tune_file.stat.exists == True
+  set_fact:
+    amqcfg_cmd: "{{ amq_configurator_amqcfg_cmd }} --profile {{ amq_configurator_profile }} --tune {{ amq_broker_default_facts_file }} --tune {{ amq_configurator_broker_db_file }} --output {{ amq_configurator_broker_config_dir }} --save-effective-profile"
+  delegate_to: 127.0.0.1
+
+- name: Construct amqcfg profile command  without DB tune file
+  when: db_tune_file.stat.exists == False
+  set_fact:
+      amqcfg_cmd: "{{ amq_configurator_amqcfg_cmd }} --profile {{ amq_configurator_profile }} --tune {{ amq_broker_default_facts_file }} --output {{ amq_configurator_broker_config_dir }} --save-effective-profile"
+  delegate_to: 127.0.0.1
+
+- debug:
+    msg=" {{ amqcfg_cmd }} "
+  delegate_to: 127.0.0.1
+
+- name: Create profiles for each broker
+  run_once: True
+  command: "{{ amqcfg_cmd }}"
+  with_items:
+    - "{{ groups['broker'] }}"
+  delegate_to: 127.0.0.1
+
+- name: Get broker instance home directory
+  when: amq_broker_instance_dir is not defined
+  run_once: True
+  command: "grep broker_instance {{ amq_broker_default_facts_file }} "
+  register:
+      grep_command
+  delegate_to: 127.0.0.1
+
+
+- name: Get broker instance home directory (set local var)
+  when: amq_broker_instance_dir is not defined and grep_command is defined
+  set_fact:
+    amq_broker_instance_dir: "{{ grep_command.stdout.split(': ') | last }}"
+
+
+- name: Copy created profiles to respective nodes to {{ amq_broker_instance_dir }}
+  copy:
+    src: "{{ amq_configurator_broker_config_dir }}/"
+    dest: "{{ amq_broker_instance_dir }}/etc/"
+    force: True
+
+- name: Append {{ amq_broker_node_info_file }} to broker file {{ amq_configurator_broker_file }}
+  shell: "cat {{ amq_broker_node_info_file }} >> {{ amq_configurator_broker_file }} "
+  delegate_to: 127.0.0.1
+
+
+# Concat all {{ amq_configurator_broker_file }} files together for dtests input file
+- name: Create list of broker profiles
+  set_fact:
+    profiles_list: "{% for item in groups['broker'] %}{{amq_configurator_workspace_dir}}/{{item}}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
+  delegate_to: 127.0.0.1
+
+- name: Make sure no broker configuration master file exists
+  run_once: True
+  file:
+    path: "{{ amq_configurator_master_file }} "
+    state: absent
+  delegate_to: 127.0.0.1
+
+- name: Concat configuration files into {{ amq_configurator_master_file }}
+  run_once: True
+  shell: " {{ amq_configurator_yq_cmd }} -y -s \"map({ (.broker_xml.name):. }) | add \" {{ profiles_list }}  >> {{ amq_configurator_master_file }} "
+  delegate_to: 127.0.0.1
+
