@@ -44,15 +44,10 @@
       amqcfg_cmd: "{{ amq_configurator_amqcfg_cmd }} --profile {{ amq_configurator_profile }} --tune {{ amq_broker_default_facts_file }} --output {{ amq_configurator_broker_config_dir }} --save-effective-profile"
   delegate_to: 127.0.0.1
 
-- debug:
-    msg=" {{ amqcfg_cmd }} "
-  delegate_to: 127.0.0.1
+- debug: msg=" {{ amqcfg_cmd }} "
 
 - name: Create profiles for each broker
-  run_once: True
   command: "{{ amqcfg_cmd }}"
-  with_items:
-    - "{{ groups['broker'] }}"
   delegate_to: 127.0.0.1
 
 - name: Get broker instance home directory
@@ -98,4 +93,3 @@
   run_once: True
   shell: " {{ amq_configurator_yq_cmd }} -y -s \"map({ (.broker_xml.name):. }) | add \" {{ profiles_list }}  >> {{ amq_configurator_master_file }} "
   delegate_to: 127.0.0.1
-
