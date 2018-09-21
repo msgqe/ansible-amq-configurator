@@ -13,22 +13,6 @@
 # limitations under the License.
 ---
 
-#- debug:
-##    msg=" {{ groups['broker']|map( {{ amq_configurator_broker_file }} )|join(' ') }} "
-##    msg=" {{ groups['broker'] | zip('/lala ' ) }} "
-#    msg="{% for item in groups['broker'] %}{{item}}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
-#
-#- debug: msg="AMQCFG Profile= {{ amq_configurator_profile }}"
-#- debug: msg="hostvars={{ amq_broker_external_address | default(ansible_default_ipv4.address) }}"
-#- debug: msg=" {{ amq_configurator_broker_file }}"
-#- debug: msg=" {{ amq_broker_local_facts_dir }} "
-#- debug: msg=" {{ amq_broker_default_facts_file }} "
-#- debug: msg=" {{ amq_broker_node_info_file }} "
-#- debug: msg=" {{ groups }} "
-#
-#- debug: msg=" {{ amq_configurator_yq_cmd }} -y -s 'map({ (.broker_xml.name):. }) | add ' "{{ profiles_list }}"  >> "{{ amq_configurator_master_file }}" "
-
-
 - name: Install configurator tool requirements
   run_once: True
   pip:
