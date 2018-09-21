@@ -11,11 +11,6 @@ Requirements
 ansible-amq-broker (not a real requirement, but it is closely used after this role)
 
 
-Build/Test Status
-------------
-
-Linux Build Status: [![Linux Build Status](https://api.travis-ci.org/msgqe/ansible-amq-broker.svg?branch=master)](https://travis-ci.org/msgqe/ansible-amq-broker)
-
 Role Variables: Basic Variables
 --------------
 
