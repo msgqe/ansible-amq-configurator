@@ -65,11 +65,10 @@
     amq_broker_instance_dir: "{{ grep_command.stdout.split(': ') | last }}"
 
 
-- name: Copy created profiles to respective nodes to {{ amq_broker_instance_dir }}
-  copy:
+- name: Copy (synchronize) created profiles to respective nodes to {{ amq_broker_instance_dir }}
+  synchronize:
     src: "{{ amq_configurator_broker_config_dir }}/"
     dest: "{{ amq_broker_instance_dir }}/etc/"
-    force: True
 
 - name: Append {{ amq_broker_node_info_file }} to broker file {{ amq_configurator_broker_file }}
   shell: "cat {{ amq_broker_node_info_file }} >> {{ amq_configurator_broker_file }} "
