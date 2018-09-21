@@ -21,7 +21,7 @@
     virtualenv: "{{ amq_configurator_venv }}"
     virtualenv_python: python
   with_items:
-    - amqcfg
+    - https://bitbucket.org/msgqe/amqcfg/get/master.zip  # bitbucket way into pip
     - yq
   delegate_to: 127.0.0.1
 
