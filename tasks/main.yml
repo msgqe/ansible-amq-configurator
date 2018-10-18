@@ -68,6 +68,7 @@
   delegate_to: 127.0.0.1
 
 - name: Install jq package for yq tool
+  when: amq_configurator_copy_only == False
   package:
     name: jq
     state: present
