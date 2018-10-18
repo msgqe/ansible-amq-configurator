@@ -86,7 +86,7 @@
 # Concat all {{ amq_configurator_broker_file }} files together for dtests input file
 - name: Create list of broker profiles
   set_fact:
-    profiles_list: "{% for item in groups['broker'] %}{{amq_configurator_workspace_dir}}/{{item}}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
+    profiles_list: "{% for item in groups['broker'] %}{{amq_configurator_workspace_dir}}/{{item}}/{{ amq_configurator_profile }}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
   delegate_to: 127.0.0.1
 
 - name: Make sure no broker configuration master file exists

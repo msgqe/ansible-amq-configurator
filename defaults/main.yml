@@ -25,8 +25,8 @@ amq_configurator_profile: "{{ lookup('env','AMQCFG_PROFILE') }}"
 amq_configurator_master_file: " {{ amq_configurator_workspace_dir }}/deployment_configuration.yaml"
 
 # tuning files
-amq_configurator_broker_file: "{{ amq_configurator_workspace_dir }}/{{ amq_broker_external_address | default(ansible_default_ipv4.address) }}/profile_data.yaml"
-amq_configurator_broker_config_dir: "{{ amq_configurator_workspace_dir }}/{{ amq_broker_external_address | default(ansible_default_ipv4.address) }}"
+amq_configurator_broker_config_dir: "{{ amq_configurator_workspace_dir }}/{{ amq_broker_external_address | default(ansible_default_ipv4.address) }}/{{ amq_configurator_profile }}"
+amq_configurator_broker_file: "{{ amq_configurator_broker_config_dir }}/profile_data.yaml"
 amq_configurator_broker_db_file: "{{ amq_configurator_workspace_dir }}/db_tune.yaml"
 
 # Different playbook (REUSE, do not DUP!)
