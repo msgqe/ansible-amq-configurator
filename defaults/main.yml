@@ -13,6 +13,8 @@
 # limitations under the License.
 ---
 
+amq_configurator_deploy_mode: "{{ lookup('env','DEPLOY_MODE') | default(false, true) }}"
+amq_configurator_copy_only: False
 # todo change default "." to playbook_dir
 amq_configurator_workspace_dir:  "{{ lookup('env','WORKSPACE') | default('.', true) }}"
 

@@ -13,7 +13,25 @@
 # limitations under the License.
 ---
 
+- name: Deployment mode only check profile existence
+  when: amq_configurator_deploy_mode == True
+  stat:
+    path: "{{ amq_configurator_broker_config_dir }}"
+  register: profile_dir
+  delegate_to: 127.0.0.1
+
+- name: Define deploy_only mode variable
+  when: amq_configurator_deploy_mode == True and profile_dir.stat.isdir is defined and profile_dir.stat.isdir and amq_configurator_deploy_mode
+  set_fact:
+    amq_configurator_copy_only: True
+  delegate_to: 127.0.0.1
+
+- debug:
+    msg="Profile {{ amq_configurator_broker_config_dir }} exists?  {{ profile_dir.stat.isdir is defined and profile_dir.stat.isdir }}"
+  when: amq_configurator_deploy_mode == True
+
 - name: Install configurator tool requirements
+  when: amq_configurator_copy_only == False
   run_once: True
   pip:
     name: "{{ item }}"
@@ -27,6 +45,7 @@
   delegate_to: 127.0.0.1
 
 - name: Install jq package for yq tool
+  when: amq_configurator_copy_only == False
   package:
     name: jq
     state: present
@@ -41,7 +60,7 @@
   delegate_to: 127.0.0.1
 
 - name: Construct amqcfg profile command with DB tune file
-  when: db_tune_file.stat.exists == True
+  when: db_tune_file.stat.exists == True and amq_configurator_copy_only == False
   set_fact:
     amqcfg_cmd: "{{ amq_configurator_amqcfg_cmd }} --profile {{ amq_configurator_profile }} --tune {{ amq_broker_default_facts_file }} --tune {{ amq_configurator_broker_db_file }} --output {{ amq_configurator_broker_config_dir }} --save-effective-profile"
   delegate_to: 127.0.0.1
@@ -53,8 +72,10 @@
   delegate_to: 127.0.0.1
 
 - debug: msg=" {{ amqcfg_cmd }} "
+  when: amq_configurator_copy_only == False
 
 - name: Create profiles for each broker
+  when: amq_configurator_copy_only == False
   command: "{{ amqcfg_cmd }}"
   delegate_to: 127.0.0.1
 
@@ -83,7 +104,7 @@
   delegate_to: 127.0.0.1
 
 
-# Concat all {{ amq_configurator_broker_file }} files together for dtests input file
+# Concat all {{ amq_configurator_broker_file }} files together into one yaml file
 - name: Create list of broker profiles
   set_fact:
     profiles_list: "{% for item in groups['broker'] %}{{amq_configurator_workspace_dir}}/{{item}}/{{ amq_configurator_profile }}/profile_data.yaml{{ '' if loop.last else ' ' }}{% endfor %}"
