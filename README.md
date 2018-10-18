@@ -23,7 +23,7 @@ Role Variables: Basic Variables
 | `amq_configurator_broker_file` | `${WORKSPACE}/<hostname>/profile_data.yaml` | Broker specific yaml configuration file. |
 | `amq_configurator_broker_config_dir` | `${WORKSPACE}/<hostname>` | Output directory for amqcfg profile generation. |
 | `amq_configurator_broker_db_file` | `${WORKSPACE}/db_tune.yaml` | Optional JDBC tuning file for amqcfg profile generation. |
-
+| `amq_configurator_deploy_mode` | false | Optional environemnt `DEPLOY_MODE` variable to define whether to reuse existing profile or create anew if it does not exist already. |
 
 Role Variables: Reused from `ansible-amq-broker`
 --------------
@@ -47,3 +47,4 @@ Role Variables: Internal variables
 | `amq_configurator_venv` | `${WORKSPACE}/venv` | Virtual env to be created and used by amqcfg, yq tools.  |
 | `amq_configurator_amqcfg_cmd` | `${WORKSPACE}/venv/bin/amqcfg` | Executable path to amqcfg bin in venv. |
 | `amq_configurator_yq_cmd` | `${WORKSPACE}/venv/bin/yq` | Executable path to yq bin in venv. |
+| `amq_configurator_copy_only` | False | Whether to copy only existing profile or generate new one. This is based on existence of profile dir and deploy_mode. |
