@@ -48,3 +48,15 @@ Role Variables: Internal variables
 | `amq_configurator_amqcfg_cmd` | `${WORKSPACE}/venv/bin/amqcfg` | Executable path to amqcfg bin in venv. |
 | `amq_configurator_yq_cmd` | `${WORKSPACE}/venv/bin/yq` | Executable path to yq bin in venv. |
 | `amq_configurator_copy_only` | False | Whether to copy only existing profile or generate new one. This is based on existence of profile dir and deploy_mode. |
+
+Usage
+------
+```yaml
+- name: Configure brokers using amqcfg
+  hosts: all
+  gather_facts: True
+#  vars_files:
+#    - group_vars/amq_broker_defaults.yml
+  roles:
+     - ansible-amq-configurator
+```

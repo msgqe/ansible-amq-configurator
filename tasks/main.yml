@@ -100,6 +100,7 @@
     dest: "{{ amq_broker_instance_dir }}/etc/"
 
 - name: Append {{ amq_broker_node_info_file }} to broker file {{ amq_configurator_broker_file }}
+  # TODO assemble module? https://docs.ansible.com/ansible/2.5/modules/assemble_module.html
   shell: "cat {{ amq_broker_node_info_file }} >> {{ amq_configurator_broker_file }} "
   delegate_to: 127.0.0.1
 
