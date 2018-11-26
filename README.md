@@ -6,6 +6,7 @@ amqcfg configuration role
 Requirements
 ------------
 
+Make sure your ansible host machine has pip installed (need for virtualenv)
 [amqcfg](https://bitbucket.org/msgqe/amqcfg/)
 
 ansible-amq-broker (not a real requirement, but it is closely used after this role)

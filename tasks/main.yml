@@ -30,6 +30,12 @@
     msg="Profile {{ amq_configurator_broker_config_dir }} exists?  {{ profile_dir.stat.isdir is defined and profile_dir.stat.isdir }}"
   when: amq_configurator_deploy_mode == True
 
+- name: Make sure rsync is present on nodes
+  package:
+    name: rsync
+    state: present
+  became: true
+
 - name: Install configurator tool requirements
   when: amq_configurator_copy_only == False
   run_once: True
