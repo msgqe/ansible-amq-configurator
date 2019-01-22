@@ -36,6 +36,11 @@
     state: present
   became: true
 
+- name: Use short venv path different
+  when: amq_configurator_venv | length > 75
+  set_fact:
+    amq_configurator_venv: "/tmp/amqcfg-venv"
+
 - name: Install configurator tool requirements
   when: amq_configurator_copy_only == False
   run_once: True

@@ -18,7 +18,7 @@ amq_configurator_copy_only: False
 # todo change default "." to playbook_dir
 amq_configurator_workspace_dir:  "{{ lookup('env','WORKSPACE') | default('.', true) }}"
 
-amq_configurator_venv: "{{ lookup('env','WORKSPACE') | default('.', true) }}/venv"
+amq_configurator_venv: "{% if lookup('env','VENV_DIR') %}{{ lookup('env', 'VENV_DIR') }}{% else %}{{ amq_configurator_workspace_dir }}/venv{% endif %}"
 amq_configurator_amqcfg_cmd: "{{ amq_configurator_venv }}/bin/amqcfg"
 amq_configurator_yq_cmd: "{{ amq_configurator_venv }}/bin/yq"
 

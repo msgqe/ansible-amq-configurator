@@ -15,6 +15,12 @@ ansible-amq-broker (not a real requirement, but it is closely used after this ro
 Role Variables: Basic Variables
 --------------
 
+As a minimum, please export `AMQCFG_PROFILE` and `WORKSPACE` as environment variables.
+For example:
+```
+export AMQCFG_PROFILE=artemis/2.6.0/security/gssapi/my.realm.yaml
+export WORKSPACE=$(pwd)
+```
 
 | Name              | Default Value       | Description          |
 |-------------------|---------------------|----------------------|
