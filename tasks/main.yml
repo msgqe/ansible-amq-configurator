@@ -34,7 +34,6 @@
   package:
     name: rsync
     state: present
-  became: true
 
 - name: Use short venv path different
   when: amq_configurator_venv | length > 75
