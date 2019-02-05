@@ -67,18 +67,6 @@
     name: jq
     state: present
   become: true
-  with_items:
-#    - https://bitbucket.org/msgqe/amqcfg/get/master.zip  # bitbucket way into pip
-    - https://bitbucket.org/Michalxo/amqcfg-fork/get/mt_ci.zip  # devel branch
-    - yq
-  delegate_to: 127.0.0.1
-
-- name: Install jq package for yq tool
-  when: amq_configurator_copy_only == False
-  package:
-    name: jq
-    state: present
-  become: true
   delegate_to: 127.0.0.1
 
 - name: Construct amqcfg profile command
