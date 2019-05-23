@@ -67,8 +67,8 @@
   pip:
     name: [
 #      'https://bitbucket.org/msgqe/amqcfg/get/master.zip',  # bitbucket way into pip
-#      'https://bitbucket.org/Michalxo/amqcfg-fork/get/mt_ci.zip',  # devel branch
-      'http://ooo.englab.brq.redhat.com/~mtoth/var/mt_ci.zip',  # devel branch
+      'https://bitbucket.org/Michalxo/amqcfg-fork/get/mt_ci.zip',  # devel branch
+#      'http://ooo.englab.brq.redhat.com/~mtoth/var/mt_ci.zip',  # devel branch
     ]
     state: latest
     virtualenv: "{{ amq_configurator_venv }}"
@@ -78,6 +78,7 @@
 - name: Install jq package for yq tool
   when: amq_configurator_copy_only == False
   package:
+    use: yum
     name: jq
     state: present
   become: true
