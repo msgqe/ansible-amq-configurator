@@ -31,6 +31,7 @@
   when: amq_configurator_deploy_mode == True
 
 - name: Make sure rsync is present on nodes
+  when: ansible_os_family == 'Linux'
   package:
     name: rsync
     state: present
@@ -46,7 +47,21 @@
   set_fact:
     amq_configurator_venv: "/tmp/amqcfg-venv"
 
-- name: Install configurator tool requirements
+- name: Create and upadte pip virtual environment
+  when: amq_configurator_copy_only == False
+  run_once: True
+  pip:
+    name: [
+      'pip',
+      'setuptools',
+      'yq'
+    ]
+    state: latest
+    virtualenv: "{{ amq_configurator_venv }}"
+    virtualenv_python: python
+  delegate_to: 127.0.0.1
+
+- name: Install configurator tool requirements to venv
   when: amq_configurator_copy_only == False
   run_once: True
   pip:
@@ -54,7 +69,6 @@
 #      'https://bitbucket.org/msgqe/amqcfg/get/master.zip',  # bitbucket way into pip
 #      'https://bitbucket.org/Michalxo/amqcfg-fork/get/mt_ci.zip',  # devel branch
       'http://ooo.englab.brq.redhat.com/~mtoth/var/mt_ci.zip',  # devel branch
-      'yq'
     ]
     state: latest
     virtualenv: "{{ amq_configurator_venv }}"
@@ -112,7 +126,14 @@
 
 
 - name: Copy (synchronize) created profiles to respective nodes to {{ amq_broker_instance_dir }}
+  when: ansible_os_family == 'Linux'
   synchronize:
+    src: "{{ amq_configurator_broker_config_dir }}/"
+    dest: "{{ amq_broker_instance_dir }}/etc/"
+
+- name: Copy created profiles to respective nodes to {{ amq_broker_instance_dir }}
+  when: ansible_os_family == 'Windows'
+  win_copy:
     src: "{{ amq_configurator_broker_config_dir }}/"
     dest: "{{ amq_broker_instance_dir }}/etc/"
 
