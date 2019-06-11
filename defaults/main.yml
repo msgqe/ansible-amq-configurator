@@ -26,10 +26,7 @@ amq_configurator_yq_cmd: "{{ amq_configurator_venv }}/bin/yq"
 amq_configurator_profile: "{{ lookup('env','AMQCFG_PROFILE') }}"
 amq_configurator_master_file: " {{ amq_configurator_workspace_dir }}/deployment_configuration.yaml"
 
-
-amq_broker_default_ipv4_address: "{{ amq_broker_external_address | default(ansible_ip_addresses | ipv4('address') | first) }}"
-#amq_broker_default_ipv4_address: "{{ amq_broker_external_address | default(ansible_default_ipv4.address) }} "
-
+amq_broker_default_ipv4_address: "{{ amq_broker_external_address | default(ansible_default_ipv4.address) }} "
 
 # tuning files
 amq_configurator_broker_config_dir: "{{ amq_configurator_workspace_dir }}/{{ amq_broker_default_ipv4_address }}/{{ amq_configurator_profile }}"
