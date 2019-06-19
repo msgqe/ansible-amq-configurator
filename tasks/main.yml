@@ -31,7 +31,7 @@
   when: amq_configurator_deploy_mode == True
 
 - name: Make sure rsync is present on nodes
-  when: ansible_os_family == 'Linux'
+  when: ansible_system == 'Linux'
   package:
     name: rsync
     state: present
@@ -120,12 +120,12 @@
 
 
 - name: Copy (synchronize) created profiles to respective nodes to {{ amq_broker_instance_dir }}
-  when: ansible_os_family == 'Linux'
+  when: ansible_system == 'Linux'
   synchronize:
     src: "{{ amq_configurator_broker_config_dir }}/"
     dest: "{{ amq_broker_instance_dir }}/etc/"
 
-- name: Copy created profiles to respective nodes to {{ amq_broker_instance_dir }}
+- name: "[win] Copy created profiles to respective nodes to {{ amq_broker_instance_dir }}"
   when: ansible_os_family == 'Windows'
   win_copy:
     src: "{{ amq_configurator_broker_config_dir }}/"
