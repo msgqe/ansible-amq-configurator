@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Include OS-specific variables (gather_facts true!)
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
 
 - name: Deployment mode only check profile existence
   when: amq_configurator_deploy_mode == True
