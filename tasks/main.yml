@@ -66,8 +66,9 @@
   pip:
     name: [
 #      'https://gitlab.cee.redhat.com/msgqe/amqcfg/-/archive/master/amqcfg-master.zip',
-      'https://gitlab.cee.redhat.com/mtoth/amqcfg-fork/-/archive/mt_ci/amqcfg-fork-mt_ci.zip',  # devel branch
+      'https://gitlab.cee.redhat.com/mtoth/amqcfg-fork/-/archive/master/amqcfg-fork-master.zip'
     ]
+    extra_args: "--trusted-host gitlab.cee.redhat.com"
     state: latest
     virtualenv: "{{ amq_configurator_venv }}"
     virtualenv_python: python
